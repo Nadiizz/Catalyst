@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 from apps.catalyst_app.views.user_views import UserViewSet, CompanyViewSet, SubscriptionViewSet
 from apps.catalyst_app.views.product_views import ProductViewSet
@@ -36,6 +37,11 @@ router.register(r'carts', ShoppingCartViewSet, basename='shopping-cart')
 app_name = 'catalyst_app'
 
 urlpatterns = [
+    # API Documentation Routes
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='catalyst_app:schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='catalyst_app:schema'), name='redoc'),
+    
     # API Routes
     path('', include(router.urls)),
     path('auth/', include('rest_framework.urls')),

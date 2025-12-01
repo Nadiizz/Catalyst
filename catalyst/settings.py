@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'drf_spectacular',
     
     'apps.catalyst_app',
     'apps.subscriptions',
@@ -161,6 +162,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # JWT Configuration
@@ -190,3 +192,23 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Auth Configuration
 AUTH_USER_MODEL = 'catalyst_app.User'
+
+# drf-spectacular Configuration
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Catalyst API',
+    'DESCRIPTION': 'API Documentation for Catalyst E-Commerce Platform',
+    'VERSION': '1.0.0',
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'AUTHENTICATION_PATTERNS': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'TAGS_DESCRIPTION': {
+        'users': 'User management endpoints',
+        'products': 'Product catalog endpoints',
+        'inventory': 'Inventory management endpoints',
+        'sales': 'Sales and orders endpoints',
+        'branches': 'Branch/location endpoints',
+        'suppliers': 'Supplier management endpoints',
+    },
+}

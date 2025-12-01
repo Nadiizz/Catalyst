@@ -9,8 +9,8 @@ class CartItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CartItem
-        fields = ['id', 'cart', 'product', 'product_name', 'product_price', 'quantity', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        fields = ['id', 'cart', 'product', 'product_name', 'product_price', 'quantity', 'added_at', 'updated_at']
+        read_only_fields = ['id', 'added_at', 'updated_at']
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
