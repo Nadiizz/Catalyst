@@ -62,8 +62,6 @@ catalyst/
 ## Instalación
 
 ```bash
-# Clonar o descargar el proyecto
-cd catalyst
 
 # Crear entorno virtual
 python -m venv env
