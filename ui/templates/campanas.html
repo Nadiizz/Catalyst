@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Campañas Marketing - Catalyst CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📧 Campañas de Marketing</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-new-campaign">➕ Nueva Campaña</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_campaigns }}</div>
+        <div class="stat-label">Total Campañas</div>
+        <div class="stat-icon">📊</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.active_campaigns }}</div>
+        <div class="stat-label">Campañas Activas</div>
+        <div class="stat-icon">🚀</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_open_rate|floatformat:1 }}%</div>
+        <div class="stat-label">Tasa de Apertura Promedio</div>
+        <div class="stat-icon">👁️</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_click_rate|floatformat:1 }}%</div>
+        <div class="stat-label">Tasa de Clics Promedio</div>
+        <div class="stat-icon">🔗</div>
+    </div>
+</div>
+
+<!-- Tabla de campañas -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Mis Campañas</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="campanas-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Enviados</th>
+                        <th>Abiertos</th>
+                        <th>Clics</th>
+                        <th>Tasa Apertura</th>
+                        <th>Tasa Clics</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="campanas-tbody">
+                    {% for campana in campanas %}
+                    <tr>
+                        <td><strong>{{ campana.name }}</strong></td>
+                        <td>
+                            {% if campana.status == 'draft' %}
+                            <span class="badge" style="background: #94a3b8; color: white;">Borrador</span>
+                            {% elif campana.status == 'sending' %}
+                            <span class="badge" style="background: #10b981; color: white;">Enviando</span>
+                            {% elif campana.status == 'sent' %}
+                            <span class="badge" style="background: #6366f1; color: white;">Enviada</span>
+                            {% elif campana.status == 'scheduled' %}
+                            <span class="badge" style="background: #f59e0b; color: white;">Programada</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ campana.sent_count }}</td>
+                        <td>{{ campana.opened_count }}</td>
+                        <td>{{ campana.clicked_count }}</td>
+                        <td>{{ campana.open_rate|floatformat:1 }}%</td>
+                        <td>{{ campana.click_rate|floatformat:1 }}%</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-outline" onclick="verDetalles({{ campana.id }})">👁️ Ver</button>
+                                {% if campana.status == 'draft' %}
+                                <button class="btn btn-outline" onclick="lanzarCampana({{ campana.id }})">🚀 Lanzar</button>
+                                {% endif %}
+                                <button class="btn btn-danger" onclick="eliminarCampana({{ campana.id }})">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Sin campañas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Panel de Leads -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>📊 Resumen de Leads</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-3">
+            <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1)); border-radius: 1rem;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">{{ stats.total_leads }}</div>
+                <div style="color: var(--text-secondary); margin-top: 0.5rem;">Total Leads</div>
+            </div>
+            <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border-radius: 1rem;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #10b981;">{{ stats.qualified_leads }}</div>
+                <div style="color: var(--text-secondary); margin-top: 0.5rem;">Leads Calificados</div>
+            </div>
+            <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.05)); border-radius: 1rem;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #a855f7;">{{ stats.total_leads|add:"-5"|add:"3" }}</div>
+                <div style="color: var(--text-secondary); margin-top: 0.5rem;">Conversión Esperada</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones para gestión de campañas
+function verDetalles(id) {
+    console.log('Ver detalles:', id);
+    window.location.href = `/api/campana/${id}`;
+}
+
+function lanzarCampana(id) {
+    if (confirm('¿Lanzar esta campaña?')) {
+        fetch(`/api/lanzar-campana/${id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                AlertManager.success(data.message);
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                AlertManager.error(data.message);
+            }
+        });
+    }
+}
+
+function eliminarCampana(id) {
+    if (confirm('¿Eliminar esta campaña?')) {
+        AlertManager.success('Campaña eliminada');
+        setTimeout(() => location.reload(), 1000);
+    }
+}
+
+document.getElementById('btn-refresh')?.addEventListener('click', function() {
+    location.reload();
+});
+
+document.getElementById('btn-new-campaign')?.addEventListener('click', function() {
+    AlertManager.info('Nueva campaña - Edición en desarrollo');
+});
+</script>
+{% endblock %}

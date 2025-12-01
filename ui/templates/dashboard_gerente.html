@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Gerente - Catalyst{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Dashboard Gerente</h1>
+            <p class="text-muted">Gestión de Equipo y Desempeño</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="loadManagerData()">
+                <i class="fas fa-sync"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+        <!-- Top Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Ventas del Equipo</h3>
+                    <p class="stat-value" id="team-sales">$0</p>
+                    <small id="sales-change" class="text-success">+0% vs mes anterior</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Vendedores Activos</h3>
+                    <p class="stat-value" id="active-sellers">0</p>
+                    <small class="text-muted">En el equipo</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Ticket Promedio</h3>
+                    <p class="stat-value" id="team-avg-ticket">$0</p>
+                    <small class="text-muted">Promedio del equipo</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Top Vendedor</h3>
+                    <p class="stat-value" id="top-seller-name">-</p>
+                    <small id="top-seller-sales" class="text-muted">$0</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Ventas por Vendedor</h3>
+                <canvas id="seller-sales-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Desempeño Semanal</h3>
+                <canvas id="weekly-performance-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Team Performance Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Desempeño del Equipo</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Ventas Este Mes</th>
+                                <th>Transacciones</th>
+                                <th>Ticket Promedio</th>
+                                <th>Comisión (5%)</th>
+                                <th>Cambio %</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="team-performance">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Últimas Transacciones del Equipo</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>N° Boleta</th>
+                                <th>Vendedor</th>
+                                <th>Cliente</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Método Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    let sellerSalesChart = null;
+    let weeklyPerformanceChart = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadManagerData();
+        // Actualizar cada 5 minutos
+        setInterval(loadManagerData, 300000);
+    });
+
+    async function loadManagerData() {
+        try {
+            const response = await fetch('/api/sales/manager-stats/', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'X-CSRFToken': getCsrfToken()
+                }
+            });
+            
+            if (!response.ok) throw new Error('Error al cargar datos');
+            
+            const data = await response.json();
+            
+            // Actualizar cards
+            document.getElementById('team-sales').textContent = formatCurrency(data.total_team_sales);
+            document.getElementById('active-sellers').textContent = data.active_sellers;
+            document.getElementById('team-avg-ticket').textContent = formatCurrency(data.team_avg_ticket);
+            document.getElementById('top-seller-name').textContent = data.top_seller?.name || '-';
+            document.getElementById('top-seller-sales').textContent = formatCurrency(data.top_seller?.sales || 0);
+            
+            // Actualizar cambio
+            const change = data.sales_change || 0;
+            const changeEl = document.getElementById('sales-change');
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '% vs mes anterior';
+            changeEl.className = change >= 0 ? 'text-success' : 'text-danger';
+            
+            // Actualizar tablas
+            renderTeamPerformance(data.team_performance);
+            renderRecentTransactions(data.recent_transactions);
+            
+            // Actualizar gráficos
+            renderSellerSalesChart(data.seller_sales);
+            renderWeeklyPerformanceChart(data.weekly_performance);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            AlertManager.error('Error al cargar datos del gerente');
+        }
+    }
+
+    function renderTeamPerformance(performance) {
+        const tbody = document.getElementById('team-performance');
+        
+        if (!performance || performance.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Sin datos disponibles</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = performance.map(seller => {
+            const change = seller.change_percentage || 0;
+            const statusBadge = seller.status === 'active' ? 'badge-success' : 'badge-danger';
+            const statusText = seller.status === 'active' ? 'Activo' : 'Inactivo';
+            
+            return `
+                <tr>
+                    <td><strong>${seller.name}</strong></td>
+                    <td>${formatCurrency(seller.total_sales)}</td>
+                    <td>${seller.transaction_count}</td>
+                    <td>${formatCurrency(seller.avg_ticket)}</td>
+                    <td>${formatCurrency(seller.commission)}</td>
+                    <td>
+                        <span class="text-${change >= 0 ? 'success' : 'danger'}">
+                            ${change >= 0 ? '+' : ''}${change.toFixed(1)}%
+                        </span>
+                    </td>
+                    <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderRecentTransactions(transactions) {
+        const tbody = document.getElementById('recent-transactions');
+        
+        if (!transactions || transactions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Sin transacciones</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = transactions.map(transaction => `
+            <tr>
+                <td><strong>${transaction.receipt_number}</strong></td>
+                <td>${transaction.seller_name}</td>
+                <td>${transaction.customer_name || 'Cliente sin nombre'}</td>
+                <td>${formatCurrency(transaction.total)}</td>
+                <td>${formatDate(transaction.created_at)}</td>
+                <td><span class="badge badge-info">${transaction.payment_method_display}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderSellerSalesChart(data) {
+        const ctx = document.getElementById('seller-sales-chart').getContext('2d');
+        
+        if (sellerSalesChart) {
+            sellerSalesChart.destroy();
+        }
+        
+        sellerSalesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Ventas por Vendedor',
+                    data: data.values,
+                    backgroundColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#f093fb',
+                        '#4facfe',
+                        '#43e97b',
+                        '#fa709a'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function renderWeeklyPerformanceChart(data) {
+        const ctx = document.getElementById('weekly-performance-chart').getContext('2d');
+        
+        if (weeklyPerformanceChart) {
+            weeklyPerformanceChart.destroy();
+        }
+        
+        weeklyPerformanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Ventas Totales',
+                    data: data.values,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP'
+        }).format(value);
+    }
+
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleDateString('es-CL', options);
+    }
+
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+</script>
+{% endblock %}

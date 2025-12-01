@@ -1,0 +1,64 @@
+{% if user.is_authenticated %}
+<aside class="sidebar">
+    <ul class="sidebar-nav">
+        {% if user.role == 'vendedor' %}
+            <!-- Dashboard Vendedor -->
+            <li><a href="{% url 'catalyst_app:dashboard-vendedor' %}">📊 Mi Desempeño</a></li>
+            <li><a href="{% url 'catalyst_app:ventas' %}">🛒 Mis Ventas</a></li>
+            <li><a href="{% url 'catalyst_app:productos' %}">📦 Catálogo</a></li>
+        
+        {% elif user.role == 'gerente' %}
+            <!-- Dashboard Gerente -->
+            <li><a href="{% url 'catalyst_app:dashboard-gerente' %}">📊 Equipo</a></li>
+            <li><a href="{% url 'catalyst_app:ventas' %}">🛒 Ventas</a></li>
+            <li><a href="{% url 'catalyst_app:productos' %}">📦 Productos</a></li>
+            <li><a href="{% url 'catalyst_app:sucursales' %}">🏪 Sucursales</a></li>
+            <li><a href="{% url 'catalyst_app:inventario' %}">📊 Inventario</a></li>
+            {% if user.company.subscription.plan_name != 'basico' %}
+            <li><a href="{% url 'catalyst_app:proveedores' %}">🚚 Proveedores</a></li>
+            {% endif %}
+        
+        {% elif user.role in 'admin_cliente|super_admin' %}
+            <!-- Dashboard Admin -->
+            <li><a href="{% url 'catalyst_app:dashboard' %}">📊 Dashboard</a></li>
+            
+            <li style="margin-top: 1.5rem;"><a href="{% url 'catalyst_app:productos' %}">📦 Productos</a></li>
+            <li><a href="{% url 'catalyst_app:sucursales' %}">🏪 Sucursales</a></li>
+            <li><a href="{% url 'catalyst_app:inventario' %}">📊 Inventario</a></li>
+            
+            {% if user.role in 'vendedor|gerente|admin_cliente' %}
+            <li><a href="{% url 'catalyst_app:ventas' %}">🛒 Ventas</a></li>
+            {% endif %}
+            
+            <li><a href="{% url 'catalyst_app:ordenes' %}">📋 Órdenes</a></li>
+            
+            {% if user.company.subscription.plan_name != 'basico' %}
+            <li><a href="{% url 'catalyst_app:proveedores' %}">🚚 Proveedores</a></li>
+            {% endif %}
+            
+            {% if user.company.subscription.plan_name == 'premium' %}
+            <li style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(168, 85, 247, 0.3);">
+                <div style="padding: 0.75rem 1rem; background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.1)); border-radius: 8px; border-left: 3px solid #a855f7; margin-bottom: 1rem;">
+                    <div style="font-weight: 700; color: #a855f7; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-crown" style="color: #fbbf24;"></i> Plan Premium - CRM
+                    </div>
+                </div>
+            </li>
+            <li><a href="{% url 'catalyst_app:clientes' %}">👤 Clientes</a></li>
+            <li><a href="{% url 'catalyst_app:campanas' %}">📢 Campañas</a></li>
+            <li><a href="{% url 'catalyst_app:leads' %}">🎯 Leads</a></li>
+            {% endif %}
+            
+            <li style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(239, 68, 68, 0.3);">
+                <div style="padding: 0.75rem 1rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.1)); border-radius: 8px; border-left: 3px solid #ef4444; margin-bottom: 1rem;">
+                    <div style="font-weight: 700; color: #ef4444; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-cog" style="color: #fb923c;"></i> Administración
+                    </div>
+                    <div style="font-size: 0.75rem; color: #cbd5e1; margin-top: 0.25rem;">Gestión de sistema</div>
+                </div>
+            </li>
+            <li style="margin-left: 1rem;"><a href="{% url 'catalyst_app:usuarios' %}" style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-users-cog" style="color: #ef4444;"></i> Mantenedor de Usuarios</a></li>
+        {% endif %}
+    </ul>
+</aside>
+{% endif %}

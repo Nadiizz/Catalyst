@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inventario - Catalyst{% endblock %}
+
+{% block nav_inventario %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Inventario</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-adjust-stock">🔄 Ajustar Stock</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-product" class="form-control" placeholder="Buscar por producto...">
+            <select id="filter-branch" class="form-control">
+                <option value="">Todas las sucursales</option>
+            </select>
+            <select id="filter-status" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="normal">Stock Normal</option>
+                <option value="bajo">Stock Bajo</option>
+                <option value="agotado">Agotado</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de inventario -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Control de Inventario</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="inventario-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Código</th>
+                        <th>Sucursal</th>
+                        <th>Stock Actual</th>
+                        <th>Stock Mínimo</th>
+                        <th>Estado</th>
+                        <th>Última Actualización</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="inventario-tbody">
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/inventario-manager.js' %}"></script>
+{% endblock %}

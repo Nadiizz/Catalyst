@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mantenedor de Usuarios - Catalyst{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #ef4444 0%, #fb923c 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0.25rem;
+    }
+    
+    .role-gerente { background: #dbeafe; color: #1e40af; }
+    .role-vendedor { background: #d1fae5; color: #065f46; }
+    .role-admin { background: #fee2e2; color: #7f1d1d; }
+    .role-super { background: #f3e8ff; color: #581c87; }
+    
+    .user-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .status-active { color: #10b981; }
+    .status-inactive { color: #ef4444; }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .role-selector {
+        min-width: 150px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-box {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ef4444;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Premium -->
+<div class="admin-header">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <h1 style="margin: 0 0 0.5rem 0; font-size: 2rem;">🔧 Mantenedor de Usuarios</h1>
+            <p style="margin: 0; opacity: 0.9;">Gestiona usuarios y asigna roles en tu empresa</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 0.9rem; opacity: 0.9;">Plan: <strong>{{ plan|upper }}</strong></div>
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem;">Usuarios: <strong>{{ current_users }}/{{ max_users }}</strong></div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="stats-grid">
+    <div class="stat-box">
+        <div class="stat-value">{{ current_users }}</div>
+        <div class="stat-label">Usuarios Activos</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">{{ max_users }}</div>
+        <div class="stat-label">Límite de Usuarios</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">{{ max_users|add:"-current_users" }}</div>
+        <div class="stat-label">Lugares Disponibles</div>
+    </div>
+</div>
+
+<!-- Información de Roles -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>📋 Roles Disponibles en el Sistema</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <div style="border-left: 4px solid #ef4444; padding-left: 1rem;">
+                <strong>👨‍💼 Admin Cliente</strong>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">Acceso total a todas las funcionalidades de la empresa. Puede gestionar usuarios y ver reportes.</p>
+            </div>
+            <div style="border-left: 4px solid #3b82f6; padding-left: 1rem;">
+                <strong>📊 Gerente</strong>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">Acceso a reportes, ventas y gestión de inventario. Puede supervisar operaciones.</p>
+            </div>
+            <div style="border-left: 4px solid #10b981; padding-left: 1rem;">
+                <strong>🛒 Vendedor</strong>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">Acceso a módulo de ventas, gestión de órdenes e inventario básico.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-name" class="form-control" placeholder="Buscar por nombre...">
+            <input type="text" id="search-email" class="form-control" placeholder="Buscar por email...">
+            <select id="filter-role" class="form-control">
+                <option value="">Todos los roles</option>
+                <option value="admin_cliente">Admin Cliente</option>
+                <option value="gerente">Gerente</option>
+                <option value="vendedor">Vendedor</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de usuarios -->
+<div class="card crud-table-card">
+    <div class="card-header flex-between">
+        <h3>👥 Lista de Usuarios</h3>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary" id="btn-new-user">➕ Nuevo Usuario</button>
+            <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="usuarios-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Nombre Completo</th>
+                        <th>Rol Actual</th>
+                        <th>Estado</th>
+                        <th>Cambiar Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarios-tbody">
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Cargando usuarios...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+
+<!-- Modal para cambiar rol -->
+<div id="role-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 10px; padding: 2rem; max-width: 500px; width: 90%;">
+        <h3 style="margin-top: 0;">Cambiar Rol de Usuario</h3>
+        <p id="modal-user-name" style="color: #6b7280; margin-bottom: 1.5rem;"></p>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nuevo Rol:</label>
+            <select id="new-role" class="form-control">
+                <option value="admin_cliente">Admin Cliente</option>
+                <option value="gerente">Gerente</option>
+                <option value="vendedor">Vendedor</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-secondary" onclick="closeRoleModal()">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveRoleChange()">Guardar Cambio</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/forms/usuarios-form.js' %}"></script>
+<script src="{% static 'js/usuarios-manager.js' %}"></script>
+<script>
+    let selectedUserId = null;
+    
+    function openRoleModal(userId, userName) {
+        selectedUserId = userId;
+        document.getElementById('modal-user-name').textContent = `Usuario: ${userName}`;
+        document.getElementById('role-modal').style.display = 'flex';
+    }
+    
+    function closeRoleModal() {
+        document.getElementById('role-modal').style.display = 'none';
+        selectedUserId = null;
+    }
+    
+    function saveRoleChange() {
+        if (!selectedUserId) return;
+        
+        const newRole = document.getElementById('new-role').value;
+        
+        // Aquí iría la llamada a API para cambiar el rol
+        fetch(`/api/users/${selectedUserId}/change-role/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ role: newRole })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert('Rol actualizado exitosamente');
+                closeRoleModal();
+                document.getElementById('btn-refresh').click();
+            } else {
+                alert('Error: ' + (data.message || 'No se pudo cambiar el rol'));
+            }
+        })
+        .catch(e => {
+            alert('Error al cambiar rol: ' + e.message);
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('role-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeRoleModal();
+        }
+    });
+</script>
+{% endblock %}

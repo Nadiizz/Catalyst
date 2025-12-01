@@ -1,0 +1,405 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planes - Catalyst</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-light">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span class="logo-icon">🚀</span>
+                <span class="logo-text">Catalyst</span>
+            </a>
+            
+            <div class="navbar-actions">
+                <a href="/" class="btn btn-outline">Inicio</a>
+                <a href="{% url 'catalyst_app:login' %}" class="btn btn-primary">Inicia Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Plans Section -->
+    <section class="plans-page">
+        <div class="section-header">
+            <h1>Elige el Plan Perfecto Para Tu Negocio</h1>
+            <p>Selecciona el plan que mejor se adapte a tus necesidades. Puedes cambiar en cualquier momento.</p>
+        </div>
+
+        <!-- Plan Cards -->
+        <div class="plans-container">
+            <!-- Plan Básico -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h2>Plan Básico</h2>
+                    <p class="plan-description">Ideal para negocios pequeños</p>
+                </div>
+                
+                <div class="plan-price">
+                    <span class="currency">$</span>
+                    <span class="amount">9.99</span>
+                    <span class="period">/mes</span>
+                </div>
+
+                <ul class="plan-features-list">
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        1 Sucursal
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        2 Usuarios
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Productos
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Ventas
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Control de Inventario
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        Gestión de Proveedores
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        Reportes Avanzados
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        API Integration
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        CRM y Marketing
+                    </li>
+                </ul>
+
+                <a href="{% url 'catalyst_app:register' %}" class="btn btn-outline btn-block">Comenzar Ahora</a>
+            </div>
+
+            <!-- Plan Estándar -->
+            <div class="plan-card highlighted">
+                <div class="plan-badge">RECOMENDADO</div>
+                
+                <div class="plan-header">
+                    <h2>Plan Estándar</h2>
+                    <p class="plan-description">Perfecto para negocios en crecimiento</p>
+                </div>
+                
+                <div class="plan-price">
+                    <span class="currency">$</span>
+                    <span class="amount">49.99</span>
+                    <span class="period">/mes</span>
+                </div>
+
+                <ul class="plan-features-list">
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        5 Sucursales
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        10 Usuarios
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Productos
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Ventas
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Control de Inventario
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Proveedores
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Reportes Básicos
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        API Integration
+                    </li>
+                    <li class="feature-excluded">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        CRM y Marketing
+                    </li>
+                </ul>
+
+                <a href="{% url 'catalyst_app:register' %}" class="btn btn-outline btn-block">Comenzar Ahora</a>
+                <p class="plan-note">Recomendado para negocios en crecimiento</p>
+            </div>
+
+            <!-- Plan Premium -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h2>Plan Premium</h2>
+                    <p class="plan-description">Para empresas grandes</p>
+                </div>
+                
+                <div class="plan-price">
+                    <span class="currency">$</span>
+                    <span class="amount">99.99</span>
+                    <span class="period">/mes</span>
+                </div>
+
+                <ul class="plan-features-list">
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Sucursales Ilimitadas
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Usuarios Ilimitados
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Todas las Características
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Reportes Avanzados
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        API Integration Completa
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        CRM y Marketing Automation
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Gestión de Leads
+                    </li>
+                    <li class="feature-included">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                        Soporte 24/7
+                    </li>
+                </ul>
+
+                <a href="{% url 'catalyst_app:register' %}" class="btn btn-outline btn-block">Comenzar Ahora</a>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison-section">
+            <h2>Comparación Completa de Planes</h2>
+            <div class="comparison-table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Características</th>
+                            <th>Básico</th>
+                            <th>Estándar</th>
+                            <th>Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sucursales</td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>Ilimitado</td>
+                        </tr>
+                        <tr>
+                            <td>Usuarios</td>
+                            <td>2</td>
+                            <td>10</td>
+                            <td>Ilimitado</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión de Productos</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión de Ventas</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Control de Inventario</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión de Proveedores</td>
+                            <td>✗</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Reportes</td>
+                            <td>Ninguno</td>
+                            <td>Básicos</td>
+                            <td>Avanzados</td>
+                        </tr>
+                        <tr>
+                            <td>API Access</td>
+                            <td>✗</td>
+                            <td>✗</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>CRM y Clientes</td>
+                            <td>✗</td>
+                            <td>✗</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Marketing Automation</td>
+                            <td>✗</td>
+                            <td>✗</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Gestión de Leads</td>
+                            <td>✗</td>
+                            <td>✗</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Soporte</td>
+                            <td>Email</td>
+                            <td>Email + Chat</td>
+                            <td>24/7 + Dedicado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2>Preguntas Frecuentes</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4>¿Puedo cambiar de plan?</h4>
+                    <p>Sí, puedes cambiar tu plan en cualquier momento. El cambio se reflejará en tu próxima facturación.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>¿Hay período de prueba?</h4>
+                    <p>Sí, ofrece una prueba gratuita de 14 días sin requerir tarjeta de crédito.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>¿Puedo cancelar en cualquier momento?</h4>
+                    <p>Absoluto. Puedes cancelar tu suscripción en cualquier momento sin penalizaciones.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>¿Qué pasa con mis datos al cancelar?</h4>
+                    <p>Tus datos permanecen disponibles durante 30 días después de la cancelación.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Catalyst</h4>
+                <p>Tu solución completa de gestión empresarial</p>
+            </div>
+            <div class="footer-section">
+                <h4>Productos</h4>
+                <ul>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="#features">Características</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Acerca de</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Términos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Catalyst. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+</body>
+</html>

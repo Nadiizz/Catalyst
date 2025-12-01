@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Vendedor - Catalyst{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Dashboard Vendedor</h1>
+            <p class="text-muted">Bienvenido, {{ user.first_name }} {{ user.last_name }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="loadSalesData()">
+                <i class="fas fa-sync"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Ventas Este Mes</h3>
+                    <p class="stat-value" id="sales-this-month">$0</p>
+                    <small id="sales-change" class="text-success">+0% vs mes anterior</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Transacciones</h3>
+                    <p class="stat-value" id="transaction-count">0</p>
+                    <small class="text-muted">Ventas totales este mes</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Ticket Promedio</h3>
+                    <p class="stat-value" id="avg-ticket">$0</p>
+                    <small class="text-muted">Monto promedio por venta</small>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Comisión Estimada</h3>
+                    <p class="stat-value" id="commission">$0</p>
+                    <small class="text-muted">Basado en 5% de ventas</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Ventas por Día</h3>
+                <canvas id="daily-sales-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Métodos de Pago</h3>
+                <canvas id="payment-methods-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Sales -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Últimas Ventas</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>N° Boleta</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Método Pago</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-sales">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Productos Más Vendidos</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Ingresos</th>
+                                <th>Tickets</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-products">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    let dailySalesChart = null;
+    let paymentMethodsChart = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSalesData();
+        // Actualizar cada 5 minutos
+        setInterval(loadSalesData, 300000);
+    });
+
+    async function loadSalesData() {
+        try {
+            const response = await fetch('/api/sales/vendor-stats/', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'X-CSRFToken': getCsrfToken()
+                }
+            });
+            
+            if (!response.ok) throw new Error('Error al cargar datos');
+            
+            const data = await response.json();
+            
+            // Actualizar cards
+            document.getElementById('sales-this-month').textContent = formatCurrency(data.total_sales);
+            document.getElementById('transaction-count').textContent = data.transaction_count;
+            document.getElementById('avg-ticket').textContent = formatCurrency(data.avg_ticket);
+            document.getElementById('commission').textContent = formatCurrency(data.estimated_commission);
+            
+            // Actualizar cambio
+            const change = data.sales_change || 0;
+            const changeEl = document.getElementById('sales-change');
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '% vs mes anterior';
+            changeEl.className = change >= 0 ? 'text-success' : 'text-danger';
+            
+            // Actualizar tablas
+            renderRecentSales(data.recent_sales);
+            renderTopProducts(data.top_products);
+            
+            // Actualizar gráficos
+            renderDailySalesChart(data.daily_sales);
+            renderPaymentMethodsChart(data.payment_methods);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            AlertManager.error('Error al cargar datos del vendedor');
+        }
+    }
+
+    function renderRecentSales(sales) {
+        const tbody = document.getElementById('recent-sales');
+        
+        if (!sales || sales.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Sin ventas registradas</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = sales.map(sale => `
+            <tr>
+                <td><strong>${sale.receipt_number}</strong></td>
+                <td>${sale.customer_name || 'Cliente sin nombre'}</td>
+                <td>${formatDate(sale.created_at)}</td>
+                <td>${formatCurrency(sale.total)}</td>
+                <td><span class="badge badge-info">${sale.payment_method_display}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="viewSaleDetail(${sale.id})">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function renderTopProducts(products) {
+        const tbody = document.getElementById('top-products');
+        
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sin datos disponibles</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = products.map(product => `
+            <tr>
+                <td><strong>${product.name}</strong></td>
+                <td>${product.total_quantity}</td>
+                <td>${formatCurrency(product.total_revenue)}</td>
+                <td>${product.ticket_count}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderDailySalesChart(data) {
+        const ctx = document.getElementById('daily-sales-chart').getContext('2d');
+        
+        if (dailySalesChart) {
+            dailySalesChart.destroy();
+        }
+        
+        dailySalesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Ventas Diarias',
+                    data: data.values,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function renderPaymentMethodsChart(data) {
+        const ctx = document.getElementById('payment-methods-chart').getContext('2d');
+        
+        if (paymentMethodsChart) {
+            paymentMethodsChart.destroy();
+        }
+        
+        paymentMethodsChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#f093fb',
+                        '#4facfe',
+                        '#43e97b',
+                        '#fa709a'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    function viewSaleDetail(id) {
+        // Implementar modal de detalles
+        AlertManager.info('Función en desarrollo');
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP'
+        }).format(value);
+    }
+
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleDateString('es-CL', options);
+    }
+
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+    }
+</script>
+{% endblock %}

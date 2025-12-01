@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalyst - Sistema de Gestión Empresarial</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-light">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="logo-icon">🚀</span>
+                <span class="logo-text">Catalyst</span>
+            </div>
+            
+            <div class="navbar-actions">
+                <a href="{% url 'catalyst_app:planes' %}" class="btn btn-outline">Planes</a>
+                <a href="{% url 'catalyst_app:login' %}" class="btn btn-primary">Inicia Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Gestión Empresarial Simplificada</h1>
+            <p class="hero-subtitle">La plataforma todo-en-uno para administrar tu negocio con eficiencia</p>
+            <div class="hero-actions">
+                <a href="{% url 'catalyst_app:planes' %}" class="btn btn-lg btn-primary">Comenzar Ahora</a>
+                <a href="#features" class="btn btn-lg btn-outline">Conocer Más</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="gradient-box gradient-1"></div>
+            <div class="gradient-box gradient-2"></div>
+            <div class="gradient-box gradient-3"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Características Principales</h2>
+            <p>Todo lo que necesitas para gestionar tu negocio en un solo lugar</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3>Gestión de Productos</h3>
+                <p>Administra tu catálogo completo con precios, categorías y disponibilidad en tiempo real</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Gestión de Ventas</h3>
+                <p>Registra todas tus transacciones y accede a reportes detallados de ingresos</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🏢</div>
+                <h3>Multi-Sucursal</h3>
+                <p>Administra múltiples sucursales desde un solo panel de control centralizado</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Reportes y Análisis</h3>
+                <p>Visualiza métricas en tiempo real con gráficos interactivos y filtros avanzados</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Gestión de Órdenes</h3>
+                <p>Controla todas tus órdenes de compra y venta con seguimiento automático</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Control de Usuarios</h3>
+                <p>Gestiona permisos y roles para cada miembro de tu equipo</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3>Inventario Inteligente</h3>
+                <p>Controla stock automáticamente con alertas de bajo inventario</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3>Gestión de Proveedores</h3>
+                <p>Administra proveedores y realiza compras de forma eficiente</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="benefits-content">
+            <div class="benefits-text">
+                <h2>¿Por qué elegir Catalyst?</h2>
+                <ul class="benefits-list">
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <div>
+                            <h4>Fácil de Usar</h4>
+                            <p>Interfaz intuitiva que no requiere capacitación técnica</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <div>
+                            <h4>Accesible Desde Cualquier Lugar</h4>
+                            <p>Accede a tu negocio desde cualquier dispositivo, en cualquier momento</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <div>
+                            <h4>Seguro y Confiable</h4>
+                            <p>Tus datos protegidos con encriptación de nivel empresarial</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <div>
+                            <h4>Soporte Dedicado</h4>
+                            <p>Equipo de soporte disponible para ayudarte en cada paso</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="benefits-image">
+                <div class="gradient-circle gradient-4"></div>
+                <div class="gradient-circle gradient-5"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-preview">
+        <div class="section-header">
+            <h2>Planes Diseñados Para Ti</h2>
+            <p>Elige el plan perfecto para tu negocio</p>
+        </div>
+
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Básico</h3>
+                <div class="price">$9.99<span>/mes</span></div>
+                <ul class="plan-features">
+                    <li>✓ 1 Sucursal</li>
+                    <li>✓ 2 Usuarios</li>
+                    <li>✓ Gestión de Productos</li>
+                    <li>✗ Reportes Avanzados</li>
+                </ul>
+                <a href="{% url 'catalyst_app:planes' %}" class="btn btn-outline btn-block">Saber Más</a>
+            </div>
+
+            <div class="pricing-card highlighted">
+                <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #6366f1, #ec4899); color: white; padding: 0.5rem 1.5rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">⭐ Más Popular</div>
+                <h3>Estándar</h3>
+                <div class="price">$49.99<span>/mes</span></div>
+                <ul class="plan-features">
+                    <li>✓ 5 Sucursales</li>
+                    <li>✓ 10 Usuarios</li>
+                    <li>✓ Todas las Características</li>
+                    <li>✓ Reportes Básicos</li>
+                </ul>
+                <a href="{% url 'catalyst_app:planes' %}" class="btn btn-primary btn-block">Comenzar</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Premium</h3>
+                <div class="price">$99.99<span>/mes</span></div>
+                <ul class="plan-features">
+                    <li>✓ Sucursales Ilimitadas</li>
+                    <li>✓ Usuarios Ilimitados</li>
+                    <li>✓ Todas las Características</li>
+                    <li>✓ Reportes Avanzados + API</li>
+                </ul>
+                <a href="{% url 'catalyst_app:planes' %}" class="btn btn-outline btn-block">Saber Más</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>¿Listo para transformar tu negocio?</h2>
+            <p>Únete a cientos de empresas que ya confían en Catalyst</p>
+            <a href="{% url 'catalyst_app:planes' %}" class="btn btn-lg btn-primary">Crear Cuenta Ahora</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Catalyst</h4>
+                <p>Tu solución completa de gestión empresarial</p>
+            </div>
+            <div class="footer-section">
+                <h4>Productos</h4>
+                <ul>
+                    <li><a href="#features">Características</a></li>
+                    <li><a href="{% url 'catalyst_app:planes' %}">Planes</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Acerca de</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Términos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Catalyst. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+</body>
+</html>

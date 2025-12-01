@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Catalyst</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-title">🚀 Catalyst</div>
+            <div class="login-subtitle">Plataforma Empresarial Integral</div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle"></i>
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form id="login-form" method="post" action="{% url 'catalyst_app:login' %}" novalidate>
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user"></i> Usuario o Email
+                </label>
+                <div class="input-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                    </svg>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        class="form-control" 
+                        placeholder="ejemplo@empresa.com" 
+                        required 
+                        autofocus
+                        autocomplete="username">
+                </div>
+                {% if form.username.errors %}
+                    <small class="form-error"><i class="fas fa-exclamation-triangle"></i> {{ form.username.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock"></i> Contraseña
+                </label>
+                <div class="input-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        class="form-control" 
+                        placeholder="••••••••" 
+                        required
+                        autocomplete="current-password">
+                </div>
+                {% if form.password.errors %}
+                    <small class="form-error"><i class="fas fa-exclamation-triangle"></i> {{ form.password.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="flex-between" style="margin-bottom: 1.5rem;">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <span>Recuerda mi cuenta</span>
+                </label>
+                <a href="#" style="color: #6366f1; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                    ¿Olvidaste contraseña?
+                </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login">
+                <i class="fas fa-sign-in-alt"></i> Ingresar
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <span>¿No tienes cuenta?</span><br>
+            <a href="{% url 'catalyst_app:register' %}">
+                <i class="fas fa-user-plus"></i> Crear cuenta nueva
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Animaciones adicionales
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+</body>
+</html>

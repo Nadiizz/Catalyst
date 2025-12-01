@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sucursales - Catalyst{% endblock %}
+
+{% block nav_sucursales %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Sucursales</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-new-branch">➕ Nueva Sucursal</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-name" class="form-control" placeholder="Buscar por nombre...">
+            <input type="text" id="search-city" class="form-control" placeholder="Buscar por ciudad...">
+            <select id="filter-status" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="true">Activas</option>
+                <option value="false">Inactivas</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de sucursales -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Lista de Sucursales</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="sucursales-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Ciudad</th>
+                        <th>Teléfono</th>
+                        <th>Gerente</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="sucursales-tbody">
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/forms/sucursales-form.js' %}"></script>
+<script src="{% static 'js/sucursales-manager.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Leads - Catalyst CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">⭐ Gestión de Leads</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-new-lead">➕ Nuevo Lead</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_leads }}</div>
+        <div class="stat-label">Total Leads</div>
+        <div class="stat-icon">⭐</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.new_leads }}</div>
+        <div class="stat-label">Leads Nuevos</div>
+        <div class="stat-icon">✨</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_lead_score|floatformat:0 }}</div>
+        <div class="stat-label">Score Promedio</div>
+        <div class="stat-icon">📈</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.conversion_rate|floatformat:1 }}%</div>
+        <div class="stat-label">Tasa de Conversión</div>
+        <div class="stat-icon">🎯</div>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-name" class="form-control" placeholder="Buscar por nombre...">
+            <select id="filter-status" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="nuevo">Nuevo</option>
+                <option value="contactado">Contactado</option>
+                <option value="en_seguimiento">En Seguimiento</option>
+                <option value="calificado">Calificado</option>
+                <option value="convertido">Convertido</option>
+                <option value="rechazado">Rechazado</option>
+            </select>
+            <select id="filter-source" class="form-control">
+                <option value="">Todas las fuentes</option>
+                <option value="web">Formulario Web</option>
+                <option value="email">Email</option>
+                <option value="campana">Campaña Marketing</option>
+                <option value="manual">Manual</option>
+                <option value="api">API</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de leads -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Mis Leads</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="leads-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Fuente</th>
+                        <th>Estado</th>
+                        <th>Lead Score</th>
+                        <th>Fecha Creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="leads-tbody">
+                    {% for lead in leads %}
+                    <tr>
+                        <td><strong>{{ lead.name }}</strong></td>
+                        <td>{{ lead.email }}</td>
+                        <td>{{ lead.phone|default:"—" }}</td>
+                        <td>
+                            {% if lead.source == 'web' %}
+                                <span class="badge" style="background: #3b82f6;">Web</span>
+                            {% elif lead.source == 'email' %}
+                                <span class="badge" style="background: #10b981;">Email</span>
+                            {% elif lead.source == 'campana' %}
+                                <span class="badge" style="background: #f59e0b;">Campaña</span>
+                            {% elif lead.source == 'manual' %}
+                                <span class="badge" style="background: #8b5cf6;">Manual</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lead.status == 'nuevo' %}
+                                <span class="badge badge-info">Nuevo</span>
+                            {% elif lead.status == 'contactado' %}
+                                <span class="badge badge-primary">Contactado</span>
+                            {% elif lead.status == 'en_seguimiento' %}
+                                <span class="badge badge-warning">En Seguimiento</span>
+                            {% elif lead.status == 'calificado' %}
+                                <span class="badge badge-success">Calificado</span>
+                            {% elif lead.status == 'convertido' %}
+                                <span class="badge" style="background: #10b981;">Convertido</span>
+                            {% elif lead.status == 'rechazado' %}
+                                <span class="badge" style="background: #ef4444;">Rechazado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div style="width: 60px; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden;">
+                                    <div style="width: {{ lead.lead_score }}%; height: 100%; background: linear-gradient(90deg, #6366f1, #ec4899);"></div>
+                                </div>
+                                {{ lead.lead_score }}
+                            </div>
+                        </td>
+                        <td>{{ lead.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-outline" onclick="verDetalles({{ lead.id }})">👁️ Ver</button>
+                                <button class="btn btn-outline" onclick="registrarSeguimiento({{ lead.id }})">📞 Seguimiento</button>
+                                <button class="btn btn-danger" onclick="eliminarLead({{ lead.id }})">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Sin leads</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pipeline de Ventas -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>📊 Pipeline de Ventas</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-5">
+            <div style="text-align: center; padding: 1.5rem; background: #e0f2fe; border-radius: 1rem; border-left: 4px solid #0284c7;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #0284c7;">{{ stats.nuevo|default:0 }}</div>
+                <div style="font-size: 0.875rem; color: #0c4a6e; margin-top: 0.5rem;">Nuevo</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #fef3c7; border-radius: 1rem; border-left: 4px solid #d97706;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #d97706;">{{ stats.contactado|default:0 }}</div>
+                <div style="font-size: 0.875rem; color: #78350f; margin-top: 0.5rem;">Contactado</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #fecaca; border-radius: 1rem; border-left: 4px solid #f87171;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #f87171;">{{ stats.seguimiento|default:0 }}</div>
+                <div style="font-size: 0.875rem; color: #7f1d1d; margin-top: 0.5rem;">Seguimiento</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #d1fae5; border-radius: 1rem; border-left: 4px solid #10b981;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">{{ stats.calificado|default:0 }}</div>
+                <div style="font-size: 0.875rem; color: #065f46; margin-top: 0.5rem;">Calificado</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #c7d2fe; border-radius: 1rem; border-left: 4px solid #6366f1;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #6366f1;">{{ stats.convertido|default:0 }}</div>
+                <div style="font-size: 0.875rem; color: #312e81; margin-top: 0.5rem;">Convertido</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones para gestión de leads
+function verDetalles(id) {
+    console.log('Ver detalles de lead:', id);
+    window.location.href = `/api/lead/${id}`;
+}
+
+function registrarSeguimiento(id) {
+    if (prompt('Nota de seguimiento:')) {
+        fetch(`/api/seguimiento-lead/${id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({note: prompt})
+        })
+        .then(r => r.json())
+        .then(data => {
+            AlertManager.success('Seguimiento registrado');
+            setTimeout(() => location.reload(), 1000);
+        });
+    }
+}
+
+function eliminarLead(id) {
+    if (confirm('¿Eliminar este lead?')) {
+        AlertManager.success('Lead eliminado');
+        setTimeout(() => location.reload(), 1000);
+    }
+}
+
+document.getElementById('btn-refresh')?.addEventListener('click', function() {
+    location.reload();
+});
+
+document.getElementById('btn-new-lead')?.addEventListener('click', function() {
+    AlertManager.info('Nuevo lead - Edición en desarrollo');
+});
+</script>
+{% endblock %}

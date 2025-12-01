@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Catalyst{% endblock %}
+
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-wrapper {
+        display: flex;
+        height: 100vh;
+        background: #0f172a;
+    }
+
+    .dashboard-wrapper .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .dashboard-wrapper .header {
+        padding: 2rem;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+    }
+
+    .dashboard-wrapper .header h1 {
+        color: #f1f5f9;
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .dashboard-wrapper .header p {
+        color: #94a3b8;
+        margin: 0.5rem 0 0 0;
+    }
+
+    .dashboard-wrapper .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .metric-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(99, 102, 241, 0.4);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+    }
+
+    .metric-card h3 {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin: 0 0 1rem 0;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .metric-value {
+        color: #f1f5f9;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .metric-change {
+        color: #10b981;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .chart-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .chart-card h3 {
+        color: #f1f5f9;
+        font-size: 1rem;
+        margin: 0 0 1.5rem 0;
+        font-weight: 600;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    .recent-table {
+        width: 100%;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .recent-table thead {
+        background: rgba(99, 102, 241, 0.1);
+        border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .recent-table th {
+        color: #94a3b8;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .recent-table td {
+        color: #cbd5e1;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .recent-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+    }
+
+    .status-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .status-failed {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="main">
+        <div class="header">
+            <h1>📊 Dashboard</h1>
+            <p>Bienvenido, {{ user.first_name }} | {% if user.company %}{{ user.company.name }}{% endif %}</p>
+        </div>
+
+        <div class="content">
+            <!-- Métricas principales -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>💰 Ventas Totales</h3>
+                    <p class="metric-value">${{ total_sales|default:"0.00" }}</p>
+                    <p class="metric-change">{% if sales_growth %}↑ +{{ sales_growth }}% vs mes anterior{% else %}Sin datos aún{% endif %}</p>
+                </div>
+
+                <div class="metric-card">
+                    <h3>📦 Productos</h3>
+                    <p class="metric-value">{{ product_count|default:"0" }}</p>
+                    <p class="metric-change">✓ Activos en el sistema</p>
+                </div>
+
+                <div class="metric-card">
+                    <h3>👥 Usuarios del Equipo</h3>
+                    <p class="metric-value">{{ user_count|default:"1" }} / {{ max_users }}</p>
+                    <p class="metric-change">Plan: {{ plan_name|upper }}</p>
+                </div>
+
+                <div class="metric-card">
+                    <h3>📋 Órdenes</h3>
+                    <p class="metric-value">{{ order_count|default:"0" }}</p>
+                    <p class="metric-change">{% if pending_orders %}⚠ {{ pending_orders }} pendientes{% else %}✓ Todas completadas{% endif %}</p>
+                </div>
+
+                <div class="metric-card">
+                    <h3>📈 Sucursales</h3>
+                    <p class="metric-value">{{ branch_count|default:"1" }} / {{ max_branches }}</p>
+                    <p class="metric-change">Activas en tu plan</p>
+                </div>
+
+                <div class="metric-card">
+                    <h3>📊 Inventario</h3>
+                    <p class="metric-value">{{ total_inventory|default:"0" }}</p>
+                    <p class="metric-change">Unidades en stock</p>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📈 Ventas por Día (últimos 7 días)</h3>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>📊 Top Productos</h3>
+                    <div class="chart-container">
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>🎯 Estado de Órdenes</h3>
+                    <div class="chart-container">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>🏢 Ingresos por Sucursal</h3>
+                    <div class="chart-container">
+                        <canvas id="branchesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actividad reciente -->
+            <div class="chart-card" style="margin-top: 2rem;">
+                <h3>🔔 Actividad Reciente</h3>
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th>Detalles</th>
+                            <th>Estado</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recent_activities %}
+                            <tr>
+                                <td>{{ activity.event_type }}</td>
+                                <td>{{ activity.description }}</td>
+                                <td><span class="status-badge status-{{ activity.status }}">{{ activity.status_display }}</span></td>
+                                <td>{{ activity.created_at|timesince }} atrás</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #cbd5e1; padding: 2rem;">
+                                    No hay actividad reciente. ¡Comienza a usar Catalyst!
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const salesData = JSON.parse('{{ sales_data|escapejs }}' || '[]');
+        const productsData = JSON.parse('{{ products_data|escapejs }}' || '[]');
+        const ordersData = JSON.parse('{{ orders_data|escapejs }}' || '[]');
+        const branchesData = JSON.parse('{{ branches_data|escapejs }}' || '[]');
+        
+        // Gráfico de ventas
+        const salesCtx = document.getElementById('salesChart');
+        if (salesCtx && salesData.length > 0) {
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesData.map(d => d.date),
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: salesData.map(d => d.amount),
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(99, 102, 241, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de productos
+        const productsCtx = document.getElementById('productsChart');
+        if (productsCtx && productsData.length > 0) {
+            new Chart(productsCtx, {
+                type: 'bar',
+                data: {
+                    labels: productsData.map(p => p.name),
+                    datasets: [{
+                        label: 'Ventas',
+                        data: productsData.map(p => p.sales),
+                        backgroundColor: [
+                            '#6366f1',
+                            '#8b5cf6',
+                            '#ec4899',
+                            '#f43f5e',
+                            '#f59e0b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(99, 102, 241, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de órdenes
+        const ordersCtx = document.getElementById('ordersChart');
+        if (ordersCtx && ordersData.length > 0) {
+            new Chart(ordersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ordersData.map(o => o.status),
+                    datasets: [{
+                        data: ordersData.map(o => o.count),
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de sucursales
+        const branchesCtx = document.getElementById('branchesChart');
+        if (branchesCtx && branchesData.length > 0) {
+            new Chart(branchesCtx, {
+                type: 'bar',
+                data: {
+                    labels: branchesData.map(b => b.name),
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: branchesData.map(b => b.revenue),
+                        backgroundColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(99, 102, 241, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

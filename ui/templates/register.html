@@ -1,0 +1,491 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Catalyst</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .login-container {
+            max-width: 800px;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 3rem;
+        }
+
+        .register-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #a855f7;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), transparent);
+        }
+
+        .login-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .login-container::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 10px;
+        }
+
+        .login-container::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .login-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Plan Selector */
+        .plan-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .plan-card {
+            position: relative;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .plan-card:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .plan-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .plan-card input[type="radio"]:checked + .plan-info {
+            color: #a855f7;
+        }
+
+        .plan-card input[type="radio"]:checked {
+            outline: 2px solid #a855f7;
+        }
+
+        .plan-card:has(input:checked) {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.15);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .plan-info {
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        .plan-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 1.5rem;
+            color: #10b981;
+            font-weight: 800;
+            margin: 0.75rem 0;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .plan-features {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-top: 0.75rem;
+        }
+
+        /* Payment Method */
+        .payment-method {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .payment-card {
+            position: relative;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .payment-card:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .payment-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .payment-card:has(input:checked) {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .payment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6366f1;
+        }
+
+        .remember-me a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .remember-me a:hover {
+            color: #a855f7;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .plan-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .register-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .login-container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .payment-method {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .login-container {
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-title">🚀 Catalyst</div>
+            <div class="login-subtitle">Crear Nueva Cuenta</div>
+        </div>
+
+        {% if errors %}
+            <div style="margin-bottom: 1.5rem;">
+                {% for key, message in errors.items %}
+                    <div class="alert alert-danger" style="margin-bottom: 0.75rem;">
+                        <i class="fas fa-exclamation-circle"></i> {{ message }}
+                    </div>
+                {% empty %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> Ocurrió un error al procesar tu solicitud
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form id="register-form" method="post" action="{% url 'catalyst_app:register' %}" novalidate>
+            {% csrf_token %}
+
+            <div class="register-grid">
+                <!-- SECCIÓN PERSONAL -->
+                <div class="section-title">
+                    <i class="fas fa-user-circle"></i> Información Personal
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Nombre</label>
+                    <div class="input-icon">
+                        <input type="text" name="first_name" class="form-control" placeholder="Tu nombre completo" required autocomplete="given-name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Apellido</label>
+                    <div class="input-icon">
+                        <input type="text" name="last_name" class="form-control" placeholder="Tus apellidos" required autocomplete="family-name">
+                    </div>
+                </div>
+
+                <!-- SECCIÓN ACCESO -->
+                <div class="section-title form-group-full">
+                    <i class="fas fa-lock"></i> Información de Acceso
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                    <div class="input-icon">
+                        <input type="email" name="email" class="form-control" placeholder="tu@empresa.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label class="form-label"><i class="fas fa-at"></i> Nombre de Usuario</label>
+                    <div class="input-icon">
+                        <input type="text" name="username" class="form-control" placeholder="usuario_catalys" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-key"></i> Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" name="password" class="form-control" placeholder="Mín. 8 caracteres" required autocomplete="new-password">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-check-circle"></i> Confirmar</label>
+                    <div class="input-icon">
+                        <input type="password" name="password_confirm" class="form-control" placeholder="Repetir contraseña" required autocomplete="new-password">
+                    </div>
+                </div>
+
+                <!-- SECCIÓN EMPRESA -->
+                <div class="section-title form-group-full">
+                    <i class="fas fa-building"></i> Tu Empresa
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label class="form-label"><i class="fas fa-industry"></i> Nombre de Empresa</label>
+                    <div class="input-icon">
+                        <input type="text" name="company_name" class="form-control" placeholder="Ej: Acme Corporation" required>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN PLAN -->
+                <div class="section-title form-group-full">
+                    <i class="fas fa-chart-pie"></i> Elige tu Plan
+                </div>
+
+                <div class="form-group form-group-full">
+                    <div class="plan-selector">
+                        <label class="plan-card">
+                            <input type="radio" name="plan" value="basico" checked required>
+                            <div class="plan-info">
+                                <div class="plan-name">📦 Básico</div>
+                                <div class="plan-price">$9.99</div>
+                                <div class="plan-features">1 Sucursal<br>2 Usuarios<br>Reportes</div>
+                            </div>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plan" value="estandar" required>
+                            <div class="plan-info">
+                                <div class="plan-name">⭐ Estándar</div>
+                                <div class="plan-price">$49.99</div>
+                                <div class="plan-features">5 Sucursales<br>10 Usuarios<br>Proveedores</div>
+                            </div>
+                        </label>
+
+                        <label class="plan-card">
+                            <input type="radio" name="plan" value="premium" required>
+                            <div class="plan-info">
+                                <div class="plan-name">👑 Premium</div>
+                                <div class="plan-price">$99.99</div>
+                                <div class="plan-features">Ilimitado<br>CRM + API<br>Soporte 24/7</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN PAGO -->
+                <div class="section-title form-group-full">
+                    <i class="fas fa-credit-card"></i> Método de Pago
+                </div>
+
+                <div class="form-group form-group-full">
+                    <div class="payment-method">
+                        <label class="payment-card">
+                            <input type="radio" name="payment_method" value="tarjeta" required>
+                            <div class="payment-icon">💳</div>
+                            <div class="payment-name">Tarjeta Crédito</div>
+                        </label>
+
+                        <label class="payment-card">
+                            <input type="radio" name="payment_method" value="paypal" required>
+                            <div class="payment-icon">🌐</div>
+                            <div class="payment-name">PayPal</div>
+                        </label>
+
+                        <label class="payment-card">
+                            <input type="radio" name="payment_method" value="transferencia" required>
+                            <div class="payment-icon">🏦</div>
+                            <div class="payment-name">Transferencia</div>
+                        </label>
+
+                        <label class="payment-card">
+                            <input type="radio" name="payment_method" value="prueba" checked required>
+                            <div class="payment-icon">🧪</div>
+                            <div class="payment-name">Prueba Gratis</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- TÉRMINOS -->
+                <div class="form-group form-group-full" style="margin-top: 1.5rem;">
+                    <label class="remember-me">
+                        <input type="checkbox" name="terms" required>
+                        <span>Acepto los <a href="#">términos y condiciones</a> de Catalyst</span>
+                    </label>
+                </div>
+
+                <!-- BOTÓN ENVÍO -->
+                <button type="submit" class="btn btn-primary btn-login form-group-full" style="margin-top: 2rem;">
+                    <i class="fas fa-user-check"></i> Crear Cuenta
+                </button>
+            </div>
+        </form>
+
+        <div class="login-footer">
+            <span>¿Ya tienes cuenta?</span><br>
+            <a href="{% url 'catalyst_app:login' %}">
+                <i class="fas fa-sign-in-alt"></i> Inicia sesión
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Animación de inputs
+        document.querySelectorAll('.form-control').forEach((input, index) => {
+            input.style.animationDelay = `${index * 0.05}s`;
+        });
+
+        // Validación de contraseñas en tiempo real
+        const passInput = document.querySelector('input[name="password"]');
+        const confirmInput = document.querySelector('input[name="password_confirm"]');
+
+        if (confirmInput) {
+            confirmInput.addEventListener('input', function() {
+                if (this.value && this.value !== passInput.value) {
+                    this.style.borderColor = '#ef4444';
+                    this.style.background = 'rgba(239, 68, 68, 0.05)';
+                } else {
+                    this.style.borderColor = 'rgba(99, 102, 241, 0.2)';
+                    this.style.background = '';
+                }
+            });
+        }
+
+        // Validación del formulario antes de enviar
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener todos los valores
+            const firstName = document.querySelector('input[name="first_name"]').value.trim();
+            const lastName = document.querySelector('input[name="last_name"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const username = document.querySelector('input[name="username"]').value.trim();
+            const password = document.querySelector('input[name="password"]').value;
+            const passwordConfirm = document.querySelector('input[name="password_confirm"]').value;
+            const companyName = document.querySelector('input[name="company_name"]').value.trim();
+            const plan = document.querySelector('input[name="plan"]:checked');
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            const terms = document.querySelector('input[name="terms"]').checked;
+
+            // Validar en cliente
+            const errors = [];
+
+            if (!firstName) errors.push('Nombre es obligatorio');
+            if (!lastName) errors.push('Apellido es obligatorio');
+            if (!email) errors.push('Email es obligatorio');
+            if (!username) errors.push('Usuario es obligatorio');
+            if (!password) errors.push('Contraseña es obligatoria');
+            if (!passwordConfirm) errors.push('Confirma tu contraseña');
+            if (!companyName) errors.push('Nombre de empresa es obligatorio');
+            if (password && password.length < 8) errors.push('Contraseña mínimo 8 caracteres');
+            if (password && passwordConfirm && password !== passwordConfirm) errors.push('Las contraseñas no coinciden');
+            if (!plan) errors.push('Selecciona un plan');
+            if (!paymentMethod) errors.push('Selecciona método de pago');
+            if (!terms) errors.push('Acepta los términos y condiciones');
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert('Por favor completa los siguientes campos:\n\n' + errors.join('\n'));
+                return false;
+            }
+
+            // Si todo está bien, enviar
+            this.submit();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Catalyst - Sistema de Gestión{% endblock %}</title>
+    
+    <!-- CSRF Token -->
+    {% csrf_token %}
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom-select.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span>🚀</span>
+                <span>Catalyst</span>
+            </div>
+            
+            <ul class="navbar-nav">
+                <li><a href="{% url 'catalyst_app:dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">Dashboard</a></li>
+                <li><a href="{% url 'catalyst_app:productos' %}" class="{% block nav_productos %}{% endblock %}">Productos</a></li>
+                <li><a href="{% url 'catalyst_app:ventas' %}" class="{% block nav_ventas %}{% endblock %}">Ventas</a></li>
+            </ul>
+            
+            <div class="navbar-user">
+                {% if user.is_authenticated %}
+                    <span class="text-muted">{{ user.get_full_name }}</span>
+                    <form action="{% url 'catalyst_app:logout' %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'catalyst_app:login' %}" class="btn btn-primary btn-sm">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Container principal -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+
+        <!-- Main content -->
+        <main class="main-content">
+            <!-- Contenido específico de la página -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/custom-select.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

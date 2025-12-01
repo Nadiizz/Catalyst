@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clientes - Catalyst CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">👥 Gestión de Clientes</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-new-customer">➕ Nuevo Cliente</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Clientes</div>
+        <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.prospects }}</div>
+        <div class="stat-label">Prospectos</div>
+        <div class="stat-icon">🎯</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.leads }}</div>
+        <div class="stat-label">Leads Calificados</div>
+        <div class="stat-icon">⭐</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">${{ stats.avg_lifetime_value|floatformat:0 }}</div>
+        <div class="stat-label">LTV Promedio</div>
+        <div class="stat-icon">💰</div>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-name" class="form-control" placeholder="Buscar por nombre...">
+            <select id="filter-status" class="form-control">
+                <option value="">Todos los estados</option>
+                {% for value, label in statuses %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <select id="filter-segment" class="form-control">
+                <option value="">Todos los segmentos</option>
+                {% for segment in segments %}
+                <option value="{{ segment }}">{{ segment }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de clientes -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Lista de Clientes</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="clientes-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Empresa</th>
+                        <th>Estado</th>
+                        <th>Lead Score</th>
+                        <th>LTV</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="clientes-tbody">
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td><strong>{{ cliente.name }}</strong></td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.company|default:"—" }}</td>
+                        <td><span class="badge badge-success">{{ cliente.get_status_display }}</span></td>
+                        <td>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 60px; height: 6px; background: #e0e0e0; border-radius: 3px; margin-right: 5px; overflow: hidden;">
+                                    <div style="width: {{ cliente.lead_score }}%; height: 100%; background: linear-gradient(90deg, #6366f1, #ec4899);"></div>
+                                </div>
+                                {{ cliente.lead_score }}
+                            </div>
+                        </td>
+                        <td>${{ cliente.lifetime_value|floatformat:0 }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-outline" onclick="editarCliente({{ cliente.id }})">✏️ Editar</button>
+                                <button class="btn btn-outline" onclick="registrarInteraccion({{ cliente.id }})">💬 Interacción</button>
+                                <button class="btn btn-danger" onclick="eliminarCliente({{ cliente.id }})">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Sin clientes</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Funciones para gestión de clientes (placeholder)
+function editarCliente(id) {
+    console.log('Editar cliente:', id);
+    AlertManager.info(`Editar cliente ${id}`);
+}
+
+function registrarInteraccion(id) {
+    console.log('Registrar interacción:', id);
+    AlertManager.success(`Interacción registrada con cliente ${id}`);
+}
+
+function eliminarCliente(id) {
+    if (confirm('¿Está seguro de eliminar este cliente?')) {
+        AlertManager.success(`Cliente ${id} eliminado`);
+    }
+}
+
+// Refrescar tabla
+document.getElementById('btn-refresh')?.addEventListener('click', function() {
+    location.reload();
+});
+</script>
+{% endblock %}

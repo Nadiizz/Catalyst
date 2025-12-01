@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ventas - Catalyst{% endblock %}
+
+{% block nav_ventas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crud.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Ventas</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" id="btn-new-sale">➕ Nueva Venta</button>
+        <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+    </div>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="card crud-filter-card">
+    <div class="card-body">
+        <div class="grid grid-3">
+            <input type="text" id="search-receipt" class="form-control" placeholder="Buscar por comprobante...">
+            <select id="filter-payment-method" class="form-control">
+                <option value="">Todos los métodos</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="cheque">Cheque</option>
+            </select>
+            <select id="filter-branch" class="form-control">
+                <option value="">Todas las sucursales</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de ventas -->
+<div class="card crud-table-card">
+    <div class="card-header">
+        <h3>Lista de Ventas</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="crud-table" id="ventas-table">
+                <thead>
+                    <tr>
+                        <th>Comprobante</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Método Pago</th>
+                        <th>Vendedor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="ventas-tbody">
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/ventas-manager.js' %}"></script>
+{% endblock %}
